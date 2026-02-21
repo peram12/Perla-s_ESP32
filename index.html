@@ -3,114 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perla's ESP | Professional Dashboard</title>
+    <meta name="referrer" content="no-referrer">
+    <title>Perla's ESP Professional</title>
     <style>
         :root {
-            --neon-blue: #00d2ff;
-            --dark-bg: #050505;
-            --card-bg: rgba(255, 255, 255, 0.03);
+            --primary: #00d2ff; /* اللون الأزرق النيون */
+            --bg: #050505;      /* الخلفية السوداء */
+            --card: rgba(255, 255, 255, 0.03); /* التصميم الزجاجي */
+            --text: #ffffff;
             --border: rgba(0, 210, 255, 0.2);
         }
 
-        body {
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: radial-gradient(circle at center, #0a1128 0%, var(--bg) 100%);
+            color: var(--text);
             margin: 0;
-            padding: 0;
-            background: radial-gradient(circle, #0a1128 0%, var(--dark-bg) 100%);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
+            padding: 0; 
+            display: none; /* يظهر بعد الرمز */
             overflow-x: hidden;
-            display: none; /* يظهر بعد إدخال الكود */
         }
 
-        /* شاشة التحميل/العنوان */
-        .header {
+        .app-container { max-width: 600px; margin: auto; padding: 20px; }
+        
+        /* الهيدر المطور */
+        .header { 
+            background: var(--card);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
             text-align: center;
-            padding: 40px 20px;
-            animation: fadeInDown 1s ease-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
         }
 
         .logo-text {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 900;
-            letter-spacing: 8px;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            background: linear-gradient(45deg, var(--neon-blue), #ffffff, var(--neon-blue));
+            background: linear-gradient(45deg, var(--primary), #ffffff, var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-size: 200% auto;
             animation: shine 3s linear infinite;
-            margin: 0;
         }
 
         @keyframes shine { to { background-position: 200% center; } }
 
-        /* حاوية الرسائل */
-        .app-container {
-            max-width: 700px;
-            margin: auto;
-            padding: 20px;
-        }
-
-        .status-bar {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--neon-blue);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 30px;
-            opacity: 0.8;
-        }
-
-        /* كرت الرسالة المستلمة */
-        .notification-item {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
+        /* العناصر المستلمة */
+        .notification-item { 
+            background: var(--card);
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 12px;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        .notification-item::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; height: 100%; width: 4px;
-            background: var(--neon-blue);
-            box-shadow: 0 0 10px var(--neon-blue);
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .notification-item:hover {
+        .notification-item:hover { 
             transform: scale(1.02);
-            background: rgba(0, 210, 255, 0.08);
-            border-color: var(--neon-blue);
+            background: rgba(0, 210, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
         }
 
-        .type-info b { font-size: 1.1rem; letter-spacing: 1px; }
-        .time-label { color: #666; font-size: 0.8rem; }
+        .type-icon { font-size: 1.2em; margin-right: 10px; }
+        .time-label { font-size: 0.75em; color: #555; }
 
-        /* عارض المحتوى Viewer */
+        /* عارض المحتوى الكامل */
         #content-viewer {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark-bg);
+            background: var(--bg); 
             z-index: 9999;
-            padding: 30px;
+            padding: 25px;
             box-sizing: border-box;
-            animation: fadeIn 0.5s ease;
+            overflow-y: auto;
+        }
+
+        .back-bar {
+            display: flex;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
         }
 
         .back-btn {
             background: transparent;
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
+            color: var(--primary);
+            border: 1px solid var(--primary);
             padding: 10px 25px;
             border-radius: 5px;
             cursor: pointer;
@@ -119,48 +111,55 @@
             transition: 0.3s;
         }
 
-        .back-btn:hover { background: var(--neon-blue); color: black; }
+        .back-btn:hover { background: var(--primary); color: #000; }
 
-        .display-area { text-align: center; margin-top: 40px; }
-        .display-area img { max-width: 100%; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 0 30px rgba(0,210,255,0.2); }
+        .display-area { text-align: center; padding: 20px; }
         
+        .display-area img {
+            max-width: 100%;
+            border-radius: 15px; 
+            box-shadow: 0 10px 40px rgba(0,210,255,0.3);
+            border: 1px solid var(--border);
+        }
+
         .link-card {
-            background: rgba(0, 210, 255, 0.1);
-            padding: 25px;
-            border-radius: 10px;
-            border: 1px dashed var(--neon-blue);
-            color: var(--neon-blue);
+            background: rgba(0, 210, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            color: var(--primary);
             text-decoration: none;
-            display: inline-block;
-            font-size: 1.2rem;
+            display: block;
+            word-break: break-all;
+            font-weight: bold;
+            border: 2px dashed var(--primary);
             transition: 0.3s;
         }
 
-        .link-card:hover { box-shadow: 0 0 20px var(--neon-blue); }
+        .link-card:hover { background: rgba(0, 210, 255, 0.15); box-shadow: 0 0 20px var(--primary); }
 
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .status-active { color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-<div id="main-screen">
+<div id="main-screen" class="app-container">
     <div class="header">
-        <h1 class="logo-text">Perla's ESP</h1>
-        <div class="status-bar" id="status-text">System Scanning...</div>
+        <div class="logo-text">Perla's ESP</div>
+        <small id="status-text" class="status-active">SYSTEM SCANNING...</small>
     </div>
-
-    <div class="app-container" id="notifications-list">
-        </div>
+    <div id="notifications-list"></div>
 </div>
 
 <div id="content-viewer">
-    <button class="back-btn" onclick="goBack()">← Back to System</button>
+    <div class="back-bar">
+        <button class="back-btn" onclick="goBack()">← BACK TO SYSTEM</button>
+    </div>
     <div id="viewer-body" class="display-area"></div>
 </div>
 
 <script>
-    // نظام الحماية
-    const pin = prompt("ACCESS REQUIRED. ENTER PIN:");
+    // الحماية بالرمز
+    const pin = prompt("PERLA'S ESP | ENTER ACCESS KEY:");
     if (pin === "1712008") {
         document.body.style.display = "block";
     } else {
@@ -200,35 +199,35 @@
                     const m = item.message;
                     if (!m) continue;
 
-                    let title = "", icon = "📡", contentHtml = "";
+                    let title = "", icon = "", contentHtml = "";
                     const timeStr = new Date(m.date * 1000).toLocaleTimeString();
 
                     if (m.text) {
                         const isLink = m.text.includes("http") || m.text.includes("www");
                         if (isLink) {
-                            title = "LINK RECEIVED";
+                            icon = "🔗"; title = "LINK RECEIVED";
                             let finalUrl = m.text.trim();
                             if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
-                            contentHtml = `<h3>SECURE LINK:</h3><a href="${finalUrl}" target="_blank" class="link-card">OPEN CONNECTION 🌐<br><br>${m.text}</a>`;
+                            contentHtml = `<h3>SECURE CONNECTION</h3><a href="${finalUrl}" target="_blank" class="link-card">OPEN LINK 🌐<br><br>${m.text}</a>`;
                         } else {
-                            title = "MESSAGE RECEIVED";
-                            contentHtml = `<h3>DECRYPTED TEXT:</h3><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:10px;">${m.text}</div>`;
+                            icon = "💬"; title = "MESSAGE RECEIVED";
+                            contentHtml = `<h3>DECRYPTED TEXT</h3><div class="link-card" style="border:none; background:rgba(255,255,255,0.05); color:#fff;">${m.text}</div>`;
                         }
                     } else if (m.photo) {
-                        title = "IMAGE CAPTURED";
+                        icon = "📸"; title = "IMAGE CAPTURED";
                         const url = await fetchFiles(m.photo[m.photo.length - 1].file_id);
-                        contentHtml = `<h3>VISUAL DATA:</h3><img src="${url}">`;
+                        contentHtml = `<h3>VISUAL DATA</h3><img src="${url}">`;
                     }
 
                     const div = document.createElement('div');
                     div.className = 'notification-item';
-                    div.innerHTML = `<div class="type-info"><b>${title}</b></div> <span class="time-label">${timeStr}</span>`;
+                    div.innerHTML = `<div><span class="type-icon">${icon}</span><b>${title}</b></div> <span class="time-label">${timeStr}</span>`;
                     div.onclick = () => showContent(contentHtml);
                     list.prepend(div);
                 }
-                document.getElementById('status-text').innerText = "System Active - Encrypted";
+                document.getElementById('status-text').innerText = "SYSTEM ACTIVE - ENCRYPTED";
             }
-        } catch (e) { console.log("System error..."); }
+        } catch (e) { }
     }
 
     setInterval(updateLoop, 2000);
