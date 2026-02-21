@@ -3,184 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer"> <title>ESP32 Dashboard | Secure</title>
+    <meta name="referrer" content="no-referrer">
+    <title>لوحة تحكم بيرلا التفاعلية</title>
     <style>
         :root {
             --bg-color: #f0f7ff;
             --container-bg: #ffffff;
             --primary-blue: #0077b6;
-            --accent-blue: #ade8f4;
             --text-main: #023e8a;
-            --text-secondary: #48cae4;
             --border-color: #caf0f8;
         }
 
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
             background-color: var(--bg-color); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px; 
-            line-height: 1.6;
-            display: none; /* نخفي الصفحة حتى يتم إدخال الرمز */
+            margin: 0; padding: 20px; 
+            display: none; 
         }
 
-        .container { max-width: 1000px; margin: auto; }
+        .container { max-width: 800px; margin: auto; }
 
         .header { 
-            background: var(--container-bg); 
-            padding: 25px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,119,182,0.1); 
-            margin-bottom: 30px; 
-            border-top: 5px solid var(--primary-blue);
-        }
-
-        h1 { margin: 0; color: var(--primary-blue); font-size: 1.8em; text-align: center; }
-
-        #status { 
-            color: var(--text-secondary); 
-            font-weight: bold; 
-            margin-top: 10px;
-            font-size: 0.9em;
-            text-align: center;
-        }
-
-        #data-log { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; 
-            text-align: right; 
+            background: var(--container-bg); padding: 20px; 
+            border-radius: 15px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
 
         .entry { 
-            background: var(--container-bg); 
-            padding: 20px; 
-            border-radius: 15px; 
-            border: 1px solid var(--border-color); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            transition: all 0.3s ease;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .entry:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 8px 20px rgba(0,119,182,0.1);
-            border-color: var(--primary-blue);
-        }
-
-        .time { font-size: 0.8em; color: #999; display: block; margin-bottom: 8px; }
-
-        .message { font-size: 1.05em; color: var(--text-main); font-weight: 600; }
-
-        img, video { 
-            width: 100%; 
-            border-radius: 10px; 
-            margin-top: 15px; 
+            background: var(--container-bg); padding: 15px; 
+            border-radius: 12px; margin-bottom: 10px;
             border: 1px solid var(--border-color);
-            display: block;
-            background: #eee;
+            cursor: pointer; transition: 0.3s;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
+        .entry:hover { background: #e0f2fe; transform: scale(1.01); }
+
+        .time { font-size: 0.8em; color: #888; }
+        .message-preview { font-weight: bold; color: var(--text-main); }
+
+        /* نافذة العرض المنبثقة */
+        #viewer {
+            display: none; position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100%; background: white; 
+            z-index: 1000; padding: 20px; box-sizing: border-box;
+            overflow-y: auto; text-align: center;
         }
+
+        .back-btn {
+            background: var(--primary-blue); color: white; border: none;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            margin-bottom: 20px; font-size: 1em;
+        }
+
+        #viewer-content img, #viewer-content video {
+            max-width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .link-style { color: #0077b6; text-decoration: underline; word-break: break-all; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div id="main-page" class="container">
     <div class="header">
-        <h1>لوحة تحكم بيرلا الآمنة 🛰️</h1>
-        <div id="status">جاري الفحص المباشر...</div>
+        <h1>إشعارات بيرلا الذكية 🛰️</h1>
+        <p id="status">جاري الاتصال...</p>
     </div>
-    
     <div id="data-log">
-        <p>بانتظار وصول أي بيانات من ESP32...</p>
-    </div>
+        </div>
+</div>
+
+<div id="viewer">
+    <button class="back-btn" onclick="closeViewer()">⬅️ رجوع للقائمة</button>
+    <hr>
+    <div id="viewer-content"></div>
 </div>
 
 <script>
-    // --- نظام حماية كلمة المرور ---
-    const pass = prompt("الرجاء إدخال كلمة المرور:");
+    // الحماية بكلمة المرور
+    const pass = prompt("كلمة المرور:");
     if (pass === "1712008") {
-        document.body.style.display = "block"; // إظهار الصفحة إذا كانت صحيحة
+        document.body.style.display = "block";
     } else {
-        alert("كلمة مرور خاطئة!");
-        window.location.href = "https://www.google.com"; // طرد المستخدم
+        alert("خطأ!");
+        window.location.href = "https://google.com";
     }
 
-    // --- نظام البوت ---
     const BOT_TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
     let lastUpdateId = 0;
-    let isFetching = false;
 
     async function getFileUrl(fileId) {
-        try {
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
-            const data = await res.json();
-            if (data.ok) {
-                return `https://api.telegram.org/file/bot${BOT_TOKEN}/${data.result.file_path}`;
-            }
-        } catch (e) { console.error("Error getting file"); }
-        return "";
+        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+        const data = await res.json();
+        return data.ok ? `https://api.telegram.org/file/bot${BOT_TOKEN}/${data.result.file_path}` : "";
     }
 
-    async function checkTelegramUpdates() {
-        if (isFetching) return;
-        isFetching = true;
+    function openViewer(htmlContent) {
+        document.getElementById('viewer-content').innerHTML = htmlContent;
+        document.getElementById('viewer').style.display = 'block';
+        document.getElementById('main-page').style.display = 'none';
+    }
 
+    function closeViewer() {
+        document.getElementById('viewer').style.display = 'none';
+        document.getElementById('main-page').style.display = 'block';
+    }
+
+    async function checkUpdates() {
         try {
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}`;
-            const response = await fetch(url);
-            const data = await response.json();
+            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}`);
+            const data = await res.json();
 
             if (data.ok && data.result.length > 0) {
                 const log = document.getElementById('data-log');
-                if(lastUpdateId === 0) log.innerHTML = ""; 
-
                 for (const update of data.result) {
                     lastUpdateId = update.update_id;
                     const msg = update.message;
                     if (!msg) continue;
 
                     const time = new Date(msg.date * 1000).toLocaleTimeString('ar-EG');
-                    let content = `<div class="entry"><span class="time">${time}</span>`;
+                    let previewText = "";
+                    let fullContent = "";
 
                     if (msg.text) {
-                        content += `<span class="message">💬 إشعار: ${msg.text}</span>`;
+                        previewText = "💬 رسالة نصية";
+                        // التحقق إذا كان النص رابطاً
+                        if (msg.text.startsWith('http')) {
+                            fullContent = `<h3>رابط مستلم:</h3><a href="${msg.text}" target="_blank" class="link-style">${msg.text}</a>`;
+                        } else {
+                            fullContent = `<h3>نص الرسالة:</h3><p>${msg.text}</p>`;
+                        }
                     } 
                     else if (msg.photo) {
-                        const fileId = msg.photo[msg.photo.length - 1].file_id;
-                        const imageUrl = await getFileUrl(fileId);
-                        content += `<span class="message">📸 صورة ملتقطة</span><br>
-                                    <img src="${imageUrl}" referrerpolicy="no-referrer" crossorigin="anonymous">`;
+                        previewText = "📸 صورة جديدة";
+                        const url = await getFileUrl(msg.photo[msg.photo.length - 1].file_id);
+                        fullContent = `<h3>الصورة الملتقطة:</h3><img src="${url}" referrerpolicy="no-referrer">`;
                     }
                     else if (msg.video) {
-                        const fileId = msg.video.file_id;
-                        const videoUrl = await getFileUrl(fileId);
-                        content += `<span class="message">🎥 فيديو وصل</span><br>
-                                    <video controls referrerpolicy="no-referrer" crossorigin="anonymous">
-                                        <source src="${videoUrl}" type="video/mp4">
-                                        متصفحك لا يدعم عرض الفيديو.
-                                    </video>`;
+                        previewText = "🎥 فيديو جديد";
+                        const url = await getFileUrl(msg.video.file_id);
+                        fullContent = `<h3>الفيديو:</h3><video controls src="${url}"></video>`;
                     }
 
-                    content += `</div>`;
-                    log.insertAdjacentHTML('afterbegin', content);
+                    const entry = document.createElement('div');
+                    entry.className = 'entry';
+                    entry.innerHTML = `<span class="message-preview">${previewText}</span><span class="time">${time}</span>`;
+                    entry.onclick = () => openViewer(fullContent);
+                    log.prepend(entry);
                 }
-                document.getElementById('status').innerText = "متصل - تم التحديث الآن";
+                document.getElementById('status').innerText = "متصل - تحديث مباشر";
             }
-        } catch (error) {
-            document.getElementById('status').innerText = "خطأ في الاتصال";
-        } finally {
-            isFetching = false;
-        }
+        } catch (e) { console.log("Error"); }
     }
 
-    // الفحص كل ثانية
-    setInterval(checkTelegramUpdates, 1000);
+    setInterval(checkUpdates, 2000);
 </script>
 
 </body>
