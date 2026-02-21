@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Perla's ESP Professional</title>
@@ -7,87 +7,110 @@
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
+            background: radial-gradient(circle, #0a1128 0%, #050505 100%);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             overflow: hidden;
+            color: white;
         }
 
-        /* حاوية النص الأساسية */
-        .container {
+        /* شاشة الانتظار (الصفحة التي تظهر في الصورة) */
+        #splash-screen {
             text-align: center;
-            position: relative;
+            transition: opacity 1s ease-out;
         }
 
-        /* تأثير النص المتحرك الفخم */
         .logo-text {
             font-size: 5rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 10px;
             color: transparent;
-            background: linear-gradient(45deg, #d4af37, #ffffff, #d4af37);
+            background: linear-gradient(45deg, #00d2ff, #ffffff, #00d2ff);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             animation: shine 3s linear infinite;
-            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.5));
         }
 
-        /* حركة الإضاءة على النص */
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
+        @keyframes shine { to { background-position: 200% center; } }
 
-        /* الإطار المتحرك حول الاسم */
         .box {
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(0, 210, 255, 0.3);
             padding: 40px 80px;
-            position: relative;
             backdrop-filter: blur(10px);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* البرنامج الفعلي (مخفي في البداية) */
+        #main-program {
+            display: none;
+            text-align: center;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .status-card {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px solid #00d2ff;
+            padding: 20px;
+            margin: 10px;
             border-radius: 10px;
-            animation: fadeIn 2s ease-in-out;
+            width: 300px;
+            transition: 0.3s;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .status-card:hover { background: rgba(0, 210, 255, 0.2); }
+
+        .check-btn {
+            background: transparent;
+            border: 1px solid #00d2ff;
+            color: #00d2ff;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 20px;
+            border-radius: 5px;
         }
 
-        /* خط متحرك تحت الاسم */
-        .line {
-            width: 0%;
-            height: 2px;
-            background: #d4af37;
-            margin: 10px auto;
-            animation: expand 1.5s forwards 1s;
-        }
+        .check-btn:hover { background: #00d2ff; color: black; box-shadow: 0 0 20px #00d2ff; }
 
-        @keyframes expand {
-            to { width: 100%; }
-        }
-
-        /* تأثير جزيئات في الخلفية */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div id="splash-screen">
         <div class="box">
             <div class="logo-text">Perla's ESP</div>
-            <div class="line"></div>
-            <p style="color: #888; letter-spacing: 5px; font-size: 0.8rem;">ULTIMATE INTELLIGENCE</p>
+            <div style="height: 2px; background: #00d2ff; width: 100%; margin: 15px 0;"></div>
+            <p style="color: #666; letter-spacing: 5px;">ULTIMATE INTELLIGENCE</p>
+            <button class="check-btn" onclick="startProgram()">CHECK</button>
         </div>
     </div>
+
+    <div id="main-program">
+        <h2 style="color: #00d2ff; letter-spacing: 3px;">SYSTEM ACTIVE</h2>
+        <div class="status-card">MESSAGE: <span style="color: #00d2ff;">No new data</span></div>
+        <div class="status-card">PHOTO: <span style="color: #00d2ff;">Scanner ready</span></div>
+        <div class="status-card">LINK: <span style="color: #00d2ff;">Connection secure</span></div>
+        <button class="check-btn" onclick="location.reload()">RESTART</button>
+    </div>
+
+    <script>
+        function startProgram() {
+            // إخفاء شاشة البداية وإظهار البرنامج
+            document.getElementById('splash-screen').classList.add('hidden');
+            document.getElementById('main-program').style.display = 'block';
+        }
+    </script>
 
 </body>
 </html>
