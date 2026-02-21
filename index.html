@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <title>Perla's ESP Professional</title>
@@ -14,15 +14,15 @@
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            color: white;
         }
 
+        /* حاوية النص الأساسية */
         .container {
             text-align: center;
             position: relative;
-            z-index: 2;
         }
 
+        /* تأثير النص المتحرك الفخم */
         .logo-text {
             font-size: 5rem;
             font-weight: 900;
@@ -37,15 +37,19 @@
             filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
         }
 
-        @keyframes shine { to { background-position: 200% center; } }
+        /* حركة الإضاءة على النص */
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
 
+        /* الإطار المتحرك حول الاسم */
         .box {
             border: 1px solid rgba(212, 175, 55, 0.2);
             padding: 40px 80px;
+            position: relative;
             backdrop-filter: blur(10px);
             border-radius: 10px;
             animation: fadeIn 2s ease-in-out;
-            background: rgba(0, 0, 0, 0.3);
         }
 
         @keyframes fadeIn {
@@ -53,6 +57,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* خط متحرك تحت الاسم */
         .line {
             width: 0%;
             height: 2px;
@@ -61,74 +66,28 @@
             animation: expand 1.5s forwards 1s;
         }
 
-        @keyframes expand { to { width: 100%; } }
-
-        /* الأقسام البرمجية المضافة ليعمل البوت */
-        .bot-status {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            display: none; /* مخفي في البداية */
+        @keyframes expand {
+            to { width: 100%; }
         }
 
-        .status-item {
-            margin: 10px 0;
-            color: #d4af37;
-            text-transform: uppercase;
-        }
-
-        /* زر التشغيل (Check) لربط البرنامج */
-        .check-btn {
-            background: transparent;
-            border: 1px solid #d4af37;
-            color: #d4af37;
-            padding: 10px 30px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            letter-spacing: 2px;
-            transition: 0.3s;
-            border-radius: 5px;
-        }
-
-        .check-btn:hover {
-            background: #d4af37;
-            color: black;
-            box-shadow: 0 0 15px #d4af37;
+        /* تأثير جزيئات في الخلفية */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="box" id="mainBox">
+        <div class="box">
             <div class="logo-text">Perla's ESP</div>
             <div class="line"></div>
-            <p id="subText" style="color: #888; letter-spacing: 5px; font-size: 0.8rem;">ULTIMATE INTELLIGENCE</p>
-            
-            <button class="check-btn" onclick="activateBot()">CHECK</button>
-
-            <div id="botDisplay" class="bot-status">
-                <div class="status-item">Message: <span id="msgStat">Scanning...</span></div>
-                <div class="status-item">Photo: <span id="photoStat">Ready</span></div>
-                <div class="status-item">Link: <span id="linkStat">Secure</span></div>
-            </div>
+            <p style="color: #888; letter-spacing: 5px; font-size: 0.8rem;">ULTIMATE INTELLIGENCE</p>
         </div>
     </div>
-
-    <script>
-        function activateBot() {
-            // إخفاء النص الفرعي وإظهار حالة البوت
-            document.getElementById('subText').style.display = 'none';
-            document.getElementById('botDisplay').style.display = 'block';
-            
-            // محاكاة عمل البوت (يمكنك ربط الأوامر الحقيقية هنا)
-            setTimeout(() => {
-                document.getElementById('msgStat').innerText = 'Connected to Bot';
-                console.log("Perla's ESP Bot Activated Successfully.");
-            }, 1000);
-        }
-    </script>
 
 </body>
 </html>
