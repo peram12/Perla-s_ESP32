@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP32 Dashboard</title>
+    <title>ESP32 Dashboard | Secure</title>
     <style>
         :root {
             --bg-color: #f0f7ff;
@@ -22,6 +22,7 @@
             margin: 0; 
             padding: 20px; 
             line-height: 1.6;
+            display: none; /* نخفي الصفحة حتى يتم إدخال الرمز */
         }
 
         .container { max-width: 1000px; margin: auto; }
@@ -35,13 +36,14 @@
             border-top: 5px solid var(--primary-blue);
         }
 
-        h1 { margin: 0; color: var(--primary-blue); font-size: 1.8em; }
+        h1 { margin: 0; color: var(--primary-blue); font-size: 1.8em; text-align: center; }
 
         #status { 
             color: var(--text-secondary); 
             font-weight: bold; 
             margin-top: 10px;
             font-size: 0.9em;
+            text-align: center;
         }
 
         #data-log { 
@@ -90,7 +92,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>ESP32 Dashboard 🛰️</h1>
+        <h1>لوحة تحكم بيرلا الآمنة 🛰️</h1>
         <div id="status">جاري الفحص المباشر...</div>
     </div>
     
@@ -100,6 +102,16 @@
 </div>
 
 <script>
+    // --- نظام حماية كلمة المرور ---
+    const pass = prompt("الرجاء إدخال كلمة المرور:");
+    if (pass === "1712008") {
+        document.body.style.display = "block"; // إظهار الصفحة إذا كانت صحيحة
+    } else {
+        alert("كلمة مرور خاطئة!");
+        window.location.href = "https://www.google.com"; // طرد المستخدم
+    }
+
+    // --- نظام البوت ---
     const BOT_TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
     let lastUpdateId = 0;
     let isFetching = false;
@@ -136,7 +148,6 @@
                     const time = new Date(msg.date * 1000).toLocaleTimeString('ar-EG');
                     let content = `<div class="entry"><span class="time">${time}</span>`;
 
-                    // التحقق من نوع الرسالة (نص، صورة، أو فيديو)
                     if (msg.text) {
                         content += `<span class="message">💬 إشعار: ${msg.text}</span>`;
                     } 
@@ -168,8 +179,8 @@
         }
     }
 
-    // الفحص كل 5 مللي ثانية (0.005 ثانية)
-    setInterval(checkTelegramUpdates, 5);
+    // الفحص كل ثانية (أفضل للمتصفح من 5 مللي ثانية)
+    setInterval(checkTelegramUpdates, 1000);
 </script>
 
 </body>
