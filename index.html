@@ -3,188 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <title>Perla's ESP Professional</title>
+    <title>Perla's ESP | Professional Dashboard</title>
     <style>
         :root {
-            --primary: #00d2ff; /* اللون الأزرق النيون */
-            --bg: #050505;      /* الخلفية السوداء */
-            --card: rgba(255, 255, 255, 0.03); /* التصميم الزجاجي */
-            --text: #ffffff;
+            --neon-blue: #00d2ff;
+            --dark-bg: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
             --border: rgba(0, 210, 255, 0.2);
         }
 
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: radial-gradient(circle at center, #0a1128 0%, var(--bg) 100%);
-            color: var(--text);
+        body {
             margin: 0;
-            padding: 0; 
-            display: none; /* يظهر بعد الرمز */
+            padding: 0;
+            background: radial-gradient(circle, #0a1128 0%, var(--dark-bg) 100%);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
             overflow-x: hidden;
+            height: 100vh;
         }
 
-        .app-container { max-width: 600px; margin: auto; padding: 20px; }
-        
-        /* الهيدر المطور */
-        .header { 
-            background: var(--card);
-            backdrop-filter: blur(15px);
-            padding: 30px;
+        /* صفحة تسجيل الدخول الاحترافية */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            padding: 40px;
             border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 25px;
             border: 1px solid var(--border);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);
+        }
+
+        .login-box h2 {
+            letter-spacing: 5px;
+            color: var(--neon-blue);
+            margin-bottom: 25px;
+        }
+
+        .login-box input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            padding: 12px;
+            color: white;
+            text-align: center;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .login-box button {
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 10px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .login-box button:hover { background: var(--neon-blue); color: black; }
+
+        /* الواجهة الرئيسية (تظهر بعد الدخول) */
+        #main-content { display: none; }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeInDown 1s ease-out;
         }
 
         .logo-text {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 900;
-            letter-spacing: 5px;
+            letter-spacing: 8px;
             text-transform: uppercase;
-            background: linear-gradient(45deg, var(--primary), #ffffff, var(--primary));
+            background: linear-gradient(45deg, var(--neon-blue), #ffffff, var(--neon-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-size: 200% auto;
             animation: shine 3s linear infinite;
+            margin: 0;
         }
 
         @keyframes shine { to { background-position: 200% center; } }
 
-        /* العناصر المستلمة */
-        .notification-item { 
-            background: var(--card);
-            padding: 18px;
-            border-radius: 15px;
-            margin-bottom: 12px;
+        .app-container { max-width: 700px; margin: auto; padding: 20px; }
+
+        .status-bar {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+        }
+
+        /* كرت الرسالة المطور */
+        .notification-item {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border);
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .notification-item:hover { transform: scale(1.01); border-color: var(--neon-blue); }
+
+        .item-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.5s ease-out;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 210, 255, 0.1);
+            padding-bottom: 5px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .type-info { color: var(--neon-blue); font-weight: bold; font-size: 0.9rem; }
+        .time-label { color: #555; font-size: 0.8rem; }
 
-        .notification-item:hover { 
-            transform: scale(1.02);
+        /* عرض المحتوى المباشر (نص أو لينك) */
+        .content-direct {
+            margin-top: 10px;
+            word-break: break-all;
+            color: #ddd;
+        }
+
+        .link-style {
+            color: var(--neon-blue);
+            text-decoration: none;
+            border: 1px dashed var(--neon-blue);
+            padding: 10px;
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        /* عارض الصور (لأنه يحتاج فتح) */
+        .photo-trigger {
             background: rgba(0, 210, 255, 0.1);
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            color: var(--neon-blue);
+            font-weight: bold;
         }
 
-        .type-icon { font-size: 1.2em; margin-right: 10px; }
-        .time-label { font-size: 0.75em; color: #555; }
-
-        /* عارض المحتوى الكامل */
         #content-viewer {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); 
+            background: var(--dark-bg);
             z-index: 9999;
-            padding: 25px;
+            padding: 30px;
             box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        .back-bar {
-            display: flex;
-            align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
         }
 
         .back-btn {
             background: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
             padding: 10px 25px;
-            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.3s;
         }
 
-        .back-btn:hover { background: var(--primary); color: #000; }
+        .display-area { text-align: center; margin-top: 40px; }
+        .display-area img { max-width: 100%; border-radius: 10px; box-shadow: 0 0 30px var(--neon-blue); }
 
-        .display-area { text-align: center; padding: 20px; }
-        
-        .display-area img {
-            max-width: 100%;
-            border-radius: 15px; 
-            box-shadow: 0 10px 40px rgba(0,210,255,0.3);
-            border: 1px solid var(--border);
-        }
-
-        .link-card {
-            background: rgba(0, 210, 255, 0.05);
-            padding: 30px;
-            border-radius: 15px;
-            color: var(--primary);
-            text-decoration: none;
-            display: block;
-            word-break: break-all;
-            font-weight: bold;
-            border: 2px dashed var(--primary);
-            transition: 0.3s;
-        }
-
-        .link-card:hover { background: rgba(0, 210, 255, 0.15); box-shadow: 0 0 20px var(--primary); }
-
-        .status-active { color: var(--primary); font-size: 0.7rem; letter-spacing: 2px; }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="main-screen" class="app-container">
-    <div class="header">
-        <div class="logo-text">Perla's ESP</div>
-        <small id="status-text" class="status-active">SYSTEM SCANNING...</small>
+<div id="login-screen">
+    <div class="login-box">
+        <h1 class="logo-text" style="font-size: 1.5rem; margin-bottom: 20px;">SYSTEM ACCESS</h1>
+        <input type="password" id="pin-input" placeholder="ENTER PIN">
+        <button onclick="checkAccess()">AUTHORIZE</button>
     </div>
-    <div id="notifications-list"></div>
+</div>
+
+<div id="main-content">
+    <div class="header">
+        <h1 class="logo-text">Perla's ESP</h1>
+        <div class="status-bar" id="status-text">System Scanning...</div>
+    </div>
+
+    <div class="app-container" id="notifications-list"></div>
 </div>
 
 <div id="content-viewer">
-    <div class="back-bar">
-        <button class="back-btn" onclick="goBack()">← BACK TO SYSTEM</button>
-    </div>
+    <button class="back-btn" onclick="goBack()">← Back to System</button>
     <div id="viewer-body" class="display-area"></div>
 </div>
 
 <script>
-    // الحماية بالرمز
-    const pin = prompt("PERLA'S ESP | ENTER ACCESS KEY:");
-    if (pin === "1712008") {
-        document.body.style.display = "block";
-    } else {
-        alert("ACCESS DENIED!");
-        window.location.href = "https://www.google.com";
-    }
-
+    const CORRECT_PIN = "1712008";
     const TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
     let lastId = 0;
 
-    function showContent(html) {
-        document.getElementById('viewer-body').innerHTML = html;
+    function checkAccess() {
+        const input = document.getElementById('pin-input').value;
+        if (input === CORRECT_PIN) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            startSystem();
+        } else {
+            alert("ACCESS DENIED!");
+        }
+    }
+
+    function showPhoto(url) {
+        document.getElementById('viewer-body').innerHTML = `<h3>VISUAL DATA:</h3><img src="${url}">`;
         document.getElementById('content-viewer').style.display = 'block';
-        document.getElementById('main-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'none';
     }
 
     function goBack() {
         document.getElementById('content-viewer').style.display = 'none';
-        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('main-content').style.display = 'block';
     }
 
     async function fetchFiles(fileId) {
         const r = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
         const d = await r.json();
         return d.ok ? `https://api.telegram.org/file/bot${TOKEN}/${d.result.file_path}` : "";
+    }
+
+    function startSystem() {
+        setInterval(updateLoop, 2000);
     }
 
     async function updateLoop() {
@@ -199,38 +263,39 @@
                     const m = item.message;
                     if (!m) continue;
 
-                    let title = "", icon = "", contentHtml = "";
                     const timeStr = new Date(m.date * 1000).toLocaleTimeString();
+                    const div = document.createElement('div');
+                    div.className = 'notification-item';
 
+                    let innerContent = "";
+                    
                     if (m.text) {
                         const isLink = m.text.includes("http") || m.text.includes("www");
                         if (isLink) {
-                            icon = "🔗"; title = "LINK RECEIVED";
                             let finalUrl = m.text.trim();
                             if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
-                            contentHtml = `<h3>SECURE CONNECTION</h3><a href="${finalUrl}" target="_blank" class="link-card">OPEN LINK 🌐<br><br>${m.text}</a>`;
+                            innerContent = `
+                                <div class="item-header"><span class="type-info">🔗 LINK DETECTED</span><span class="time-label">${timeStr}</span></div>
+                                <a href="${finalUrl}" target="_blank" class="link-style">OPEN CONNECTION 🌐<br>${m.text}</a>`;
                         } else {
-                            icon = "💬"; title = "MESSAGE RECEIVED";
-                            contentHtml = `<h3>DECRYPTED TEXT</h3><div class="link-card" style="border:none; background:rgba(255,255,255,0.05); color:#fff;">${m.text}</div>`;
+                            innerContent = `
+                                <div class="item-header"><span class="type-info">💬 TEXT DECRYPTED</span><span class="time-label">${timeStr}</span></div>
+                                <div class="content-direct">${m.text}</div>`;
                         }
                     } else if (m.photo) {
-                        icon = "📸"; title = "IMAGE CAPTURED";
                         const url = await fetchFiles(m.photo[m.photo.length - 1].file_id);
-                        contentHtml = `<h3>VISUAL DATA</h3><img src="${url}">`;
+                        innerContent = `
+                            <div class="item-header"><span class="type-info">📸 IMAGE INTERCEPTED</span><span class="time-label">${timeStr}</span></div>
+                            <div class="photo-trigger" onclick="showPhoto('${url}')">VIEW VISUAL DATA</div>`;
                     }
 
-                    const div = document.createElement('div');
-                    div.className = 'notification-item';
-                    div.innerHTML = `<div><span class="type-icon">${icon}</span><b>${title}</b></div> <span class="time-label">${timeStr}</span>`;
-                    div.onclick = () => showContent(contentHtml);
+                    div.innerHTML = innerContent;
                     list.prepend(div);
                 }
-                document.getElementById('status-text').innerText = "SYSTEM ACTIVE - ENCRYPTED";
+                document.getElementById('status-text').innerText = "System Active - Encrypted";
             }
-        } catch (e) { }
+        } catch (e) { console.log("System error..."); }
     }
-
-    setInterval(updateLoop, 2000);
 </script>
 
 </body>
