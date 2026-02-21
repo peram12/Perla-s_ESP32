@@ -1,93 +1,238 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Perla's ESP Professional</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perla's ESP | Professional Dashboard</title>
     <style>
+        :root {
+            --neon-blue: #00d2ff;
+            --dark-bg: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(0, 210, 255, 0.2);
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
-            height: 100vh;
+            background: radial-gradient(circle, #0a1128 0%, var(--dark-bg) 100%);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+            display: none; /* يظهر بعد إدخال الكود */
+        }
+
+        /* شاشة التحميل/العنوان */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo-text {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, var(--neon-blue), #ffffff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+            margin: 0;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* حاوية الرسائل */
+        .app-container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .status-bar {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        /* كرت الرسالة المستلمة */
+        .notification-item {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
 
-        /* حاوية النص الأساسية */
-        .container {
-            text-align: center;
-            position: relative;
-        }
-
-        /* تأثير النص المتحرك الفخم */
-        .logo-text {
-            font-size: 5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 10px;
-            color: transparent;
-            background: linear-gradient(45deg, #d4af37, #ffffff, #d4af37);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shine 3s linear infinite;
-            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
-        }
-
-        /* حركة الإضاءة على النص */
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        /* الإطار المتحرك حول الاسم */
-        .box {
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 40px 80px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* خط متحرك تحت الاسم */
-        .line {
-            width: 0%;
-            height: 2px;
-            background: #d4af37;
-            margin: 10px auto;
-            animation: expand 1.5s forwards 1s;
-        }
-
-        @keyframes expand {
-            to { width: 100%; }
-        }
-
-        /* تأثير جزيئات في الخلفية */
-        .particles {
+        .notification-item::before {
+            content: '';
             position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            left: 0; top: 0; height: 100%; width: 4px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
         }
+
+        .notification-item:hover {
+            transform: scale(1.02);
+            background: rgba(0, 210, 255, 0.08);
+            border-color: var(--neon-blue);
+        }
+
+        .type-info b { font-size: 1.1rem; letter-spacing: 1px; }
+        .time-label { color: #666; font-size: 0.8rem; }
+
+        /* عارض المحتوى Viewer */
+        #content-viewer {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark-bg);
+            z-index: 9999;
+            padding: 30px;
+            box-sizing: border-box;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover { background: var(--neon-blue); color: black; }
+
+        .display-area { text-align: center; margin-top: 40px; }
+        .display-area img { max-width: 100%; border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 0 30px rgba(0,210,255,0.2); }
+        
+        .link-card {
+            background: rgba(0, 210, 255, 0.1);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px dashed var(--neon-blue);
+            color: var(--neon-blue);
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .link-card:hover { box-shadow: 0 0 20px var(--neon-blue); }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="box">
-            <div class="logo-text">Perla's ESP</div>
-            <div class="line"></div>
-            <p style="color: #888; letter-spacing: 5px; font-size: 0.8rem;">ULTIMATE INTELLIGENCE</p>
-        </div>
+<div id="main-screen">
+    <div class="header">
+        <h1 class="logo-text">Perla's ESP</h1>
+        <div class="status-bar" id="status-text">System Scanning...</div>
     </div>
+
+    <div class="app-container" id="notifications-list">
+        </div>
+</div>
+
+<div id="content-viewer">
+    <button class="back-btn" onclick="goBack()">← Back to System</button>
+    <div id="viewer-body" class="display-area"></div>
+</div>
+
+<script>
+    // نظام الحماية
+    const pin = prompt("ACCESS REQUIRED. ENTER PIN:");
+    if (pin === "1712008") {
+        document.body.style.display = "block";
+    } else {
+        alert("ACCESS DENIED!");
+        window.location.href = "https://www.google.com";
+    }
+
+    const TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
+    let lastId = 0;
+
+    function showContent(html) {
+        document.getElementById('viewer-body').innerHTML = html;
+        document.getElementById('content-viewer').style.display = 'block';
+        document.getElementById('main-screen').style.display = 'none';
+    }
+
+    function goBack() {
+        document.getElementById('content-viewer').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+    }
+
+    async function fetchFiles(fileId) {
+        const r = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+        const d = await r.json();
+        return d.ok ? `https://api.telegram.org/file/bot${TOKEN}/${d.result.file_path}` : "";
+    }
+
+    async function updateLoop() {
+        try {
+            const r = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${lastId + 1}`);
+            const data = await r.json();
+
+            if (data.ok && data.result.length > 0) {
+                const list = document.getElementById('notifications-list');
+                for (const item of data.result) {
+                    lastId = item.update_id;
+                    const m = item.message;
+                    if (!m) continue;
+
+                    let title = "", icon = "📡", contentHtml = "";
+                    const timeStr = new Date(m.date * 1000).toLocaleTimeString();
+
+                    if (m.text) {
+                        const isLink = m.text.includes("http") || m.text.includes("www");
+                        if (isLink) {
+                            title = "LINK RECEIVED";
+                            let finalUrl = m.text.trim();
+                            if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
+                            contentHtml = `<h3>SECURE LINK:</h3><a href="${finalUrl}" target="_blank" class="link-card">OPEN CONNECTION 🌐<br><br>${m.text}</a>`;
+                        } else {
+                            title = "MESSAGE RECEIVED";
+                            contentHtml = `<h3>DECRYPTED TEXT:</h3><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:10px;">${m.text}</div>`;
+                        }
+                    } else if (m.photo) {
+                        title = "IMAGE CAPTURED";
+                        const url = await fetchFiles(m.photo[m.photo.length - 1].file_id);
+                        contentHtml = `<h3>VISUAL DATA:</h3><img src="${url}">`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'notification-item';
+                    div.innerHTML = `<div class="type-info"><b>${title}</b></div> <span class="time-label">${timeStr}</span>`;
+                    div.onclick = () => showContent(contentHtml);
+                    list.prepend(div);
+                }
+                document.getElementById('status-text').innerText = "System Active - Encrypted";
+            }
+        } catch (e) { console.log("System error..."); }
+    }
+
+    setInterval(updateLoop, 2000);
+</script>
 
 </body>
 </html>
