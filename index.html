@@ -17,10 +17,9 @@
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             background-color: var(--bg); 
             margin: 0; padding: 0; 
-            display: none; /* حماية بكلمة السر */
+            display: none; 
         }
 
-        /* تنسيق القائمة الرئيسية */
         .app-container { max-width: 600px; margin: auto; padding: 20px; }
         
         .header { 
@@ -42,7 +41,6 @@
         .type-icon { font-size: 1.2em; margin-left: 10px; }
         .time-label { font-size: 0.75em; color: #a0aec0; }
 
-        /* نافذة عرض المحتوى (التي تفتح عند الضغط) */
         #content-viewer {
             display: none; position: fixed; top: 0; left: 0; 
             width: 100%; height: 100%; background: #ffffff; 
@@ -71,7 +69,7 @@
         .link-card {
             background: #f0f7ff; padding: 20px; border-radius: 15px;
             color: var(--primary); text-decoration: none; display: block;
-            word-break: break-all; font-weight: bold;
+            word-break: break-all; font-weight: bold; border: 2px dashed var(--primary);
         }
     </style>
 </head>
@@ -82,20 +80,17 @@
         <h1 style="margin:0; color:var(--primary);">بريد بيرلا الذكي 🛰️</h1>
         <small id="status-text" style="color:#48cae4;">جاري المزامنة...</small>
     </div>
-    <div id="notifications-list">
-        </div>
+    <div id="notifications-list"></div>
 </div>
 
 <div id="content-viewer">
     <div class="back-bar">
         <button class="back-btn" onclick="goBack()">⬅️ عودة للرسائل</button>
     </div>
-    <div id="viewer-body" class="display-area">
-        </div>
+    <div id="viewer-body" class="display-area"></div>
 </div>
 
 <script>
-    // 1. نظام الحماية
     const pin = prompt("أدخل رمز الدخول الخاص بكِ:");
     if (pin === "1712008") {
         document.body.style.display = "block";
@@ -107,7 +102,6 @@
     const TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
     let lastId = 0;
 
-    // 2. وظائف الانتقال والرجوع
     function showContent(html) {
         document.getElementById('viewer-body').innerHTML = html;
         document.getElementById('content-viewer').style.display = 'block';
@@ -125,7 +119,6 @@
         return d.ok ? `https://api.telegram.org/file/bot${TOKEN}/${d.result.file_path}` : "";
     }
 
-    // 3. جلب التحديثات
     async function updateLoop() {
         try {
             const r = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${lastId + 1}`);
@@ -142,12 +135,21 @@
                     const timeStr = new Date(m.date * 1000).toLocaleTimeString('ar-EG');
 
                     if (m.text) {
-                        icon = "💬"; title = "رسالة نصية";
-                        if (m.text.includes("http")) {
+                        // تعديل ذكي لفحص الروابط
+                        const isLink = m.text.includes("http") || m.text.includes("www") || m.text.includes(".com");
+                        
+                        if (isLink) {
                             icon = "🔗"; title = "رابط مستلم";
-                            contentHtml = `<h3>الرابط:</h3><a href="${m.text}" target="_blank" class="link-card">${m.text}</a><p>اضغطي على الرابط لفتحه</p>`;
+                            // تأكد من أن الرابط يبدأ بـ http ليعمل الضغط عليه
+                            let finalUrl = m.text.trim();
+                            if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
+                            
+                            contentHtml = `<h3>رابط جديد:</h3>
+                                          <a href="${finalUrl}" target="_blank" class="link-card">اضغطي هنا لفتح الرابط 🌐<br><br>${m.text}</a>
+                                          <p style="margin-top:15px; color:#666;">سيفتح الرابط في نافذة جديدة</p>`;
                         } else {
-                            contentHtml = `<h3>نص الرسالة:</h3><div class="link-card" style="color:#333;">${m.text}</div>`;
+                            icon = "💬"; title = "رسالة نصية";
+                            contentHtml = `<h3>نص الرسالة:</h3><div class="link-card" style="color:#333; border:none; background:#eee;">${m.text}</div>`;
                         }
                     } else if (m.photo) {
                         icon = "📸"; title = "صورة ملتقطة";
