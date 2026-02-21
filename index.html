@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #f0f7ff;
+            --container-bg: #ffffff;
+            --primary-blue: #0077b6;
+            --accent-blue: #ade8f4;
+            --text-main: #023e8a;
+            --text-secondary: #48cae4;
+            --border-color: #caf0f8;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1000px; margin: auto; }
+
+        .header { 
+            background: var(--container-bg); 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,119,182,0.1); 
+            margin-bottom: 30px; 
+            border-top: 5px solid var(--primary-blue);
+        }
+
+        h1 { margin: 0; color: var(--primary-blue); font-size: 1.8em; }
+
+        #status { 
+            color: var(--text-secondary); 
+            font-weight: bold; 
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        #data-log { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 20px; 
+            text-align: right; 
+        }
+
+        .entry { 
+            background: var(--container-bg); 
+            padding: 20px; 
+            border-radius: 15px; 
+            border: 1px solid var(--border-color); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .entry:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(0,119,182,0.1);
+            border-color: var(--primary-blue);
+        }
+
+        .time { font-size: 0.8em; color: #999; display: block; margin-bottom: 8px; }
+
+        .message { font-size: 1.05em; color: var(--text-main); font-weight: 600; }
+
+        img, video { 
+            width: 100%; 
+            border-radius: 10px; 
+            margin-top: 15px; 
+            border: 1px solid var(--border-color);
+            display: block;
+            background: #eee;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>ESP32 Dashboard 🛰️</h1>
+        <div id="status">جاري الفحص المباشر...</div>
+    </div>
+    
+    <div id="data-log">
+        <p>بانتظار وصول أي بيانات من ESP32...</p>
+    </div>
+</div>
+
+<script>
+    const BOT_TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
+    let lastUpdateId = 0;
+    let isFetching = false;
+
+    async function getFileUrl(fileId) {
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+            const data = await res.json();
+            if (data.ok) {
+                return `https://api.telegram.org/file/bot${BOT_TOKEN}/${data.result.file_path}`;
+            }
+        } catch (e) { console.error("Error getting file"); }
+        return "";
+    }
+
+    async function checkTelegramUpdates() {
+        if (isFetching) return;
+        isFetching = true;
+
+        try {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.ok && data.result.length > 0) {
+                const log = document.getElementById('data-log');
+                if(lastUpdateId === 0) log.innerHTML = ""; 
+
+                for (const update of data.result) {
+                    lastUpdateId = update.update_id;
+                    const msg = update.message;
+                    if (!msg) continue;
+
+                    const time = new Date(msg.date * 1000).toLocaleTimeString('ar-EG');
+                    let content = `<div class="entry"><span class="time">${time}</span>`;
+
+                    // التحقق من نوع الرسالة (نص، صورة، أو فيديو)
+                    if (msg.text) {
+                        content += `<span class="message">💬 إشعار: ${msg.text}</span>`;
+                    } 
+                    else if (msg.photo) {
+                        const fileId = msg.photo[msg.photo.length - 1].file_id;
+                        const imageUrl = await getFileUrl(fileId);
+                        content += `<span class="message">📸 صورة ملتقطة</span><br>
+                                    <img src="${imageUrl}" referrerpolicy="no-referrer" crossorigin="anonymous">`;
+                    }
+                    else if (msg.video) {
+                        const fileId = msg.video.file_id;
+                        const videoUrl = await getFileUrl(fileId);
+                        content += `<span class="message">🎥 فيديو وصل</span><br>
+                                    <video controls referrerpolicy="no-referrer" crossorigin="anonymous">
+                                        <source src="${videoUrl}" type="video/mp4">
+                                        متصفحك لا يدعم عرض الفيديو.
+                                    </video>`;
+                    }
+
+                    content += `</div>`;
+                    log.insertAdjacentHTML('afterbegin', content);
+                }
+                document.getElementById('status').innerText = "متصل - تم التحديث الآن";
+            }
+        } catch (error) {
+            document.getElementById('status').innerText = "خطأ في الاتصال";
+        } finally {
+            isFetching = false;
+        }
+    }
+
+    // الفحص كل 5 مللي ثانية (0.005 ثانية)
+    setInterval(checkTelegramUpdates, 5);
+</script>
+
+</body>
+</html>
