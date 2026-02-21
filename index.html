@@ -2,127 +2,128 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perla's ESP | Professional Interface</title>
+    <title>Perla's ESP Professional</title>
     <style>
-        /* الخلفية العامة فخمة وغامقة */
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle, #1a1a1a 0%, #050505 100%);
+            background: radial-gradient(circle, #0a1128 0%, #050505 100%);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            color: white;
         }
 
-        /* الحاوية الرئيسية */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 20px;
-            padding: 40px;
-            width: 350px;
+        .container {
             text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            animation: slideUp 0.8s ease-out;
+            position: relative;
         }
 
-        /* الاسم الجديد Perla's ESP بتأثير ذهبي */
-        .brand-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            background: linear-gradient(45deg, #d4af37, #fdf5e6, #d4af37);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: goldShine 3s infinite linear;
-            background-size: 200% auto;
-        }
-
-        /* قائمة الإشعارات (Message, Image, Link) */
-        .status-list {
-            list-style: none;
-            padding: 0;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .status-item {
-            background: rgba(255, 255, 255, 0.05);
-            margin: 10px 0;
-            padding: 12px 15px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid #d4af37;
-            transition: 0.3s;
-        }
-
-        .status-item:hover {
-            background: rgba(212, 175, 55, 0.1);
-            transform: translateX(5px);
-        }
-
-        /* زر الفحص الجديد: Check */
-        .check-btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background: transparent;
-            border: 1px solid #d4af37;
-            color: #d4af37;
-            font-weight: bold;
+        /* تحويل اللون من ذهبي إلى أزرق احترافي */
+        .logo-text {
+            font-size: 4rem;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.4s;
+            letter-spacing: 10px;
+            color: transparent;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5, #00d2ff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.5));
         }
 
-        .check-btn:hover {
-            background: #d4af37;
-            color: #000;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
-
-        /* حركات الأنيميشن */
-        @keyframes goldShine {
+        @keyframes shine {
             to { background-position: 200% center; }
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+        .box {
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 40px 60px;
+            position: relative;
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            animation: fadeIn 2s ease-in-out;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* العناصر المطلوبة: Message, Photo, Link */
+        .status-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-align: left;
+            display: inline-block;
+        }
+
+        .status-info div {
+            margin: 10px 0;
+            padding-left: 15px;
+            border-left: 2px solid #00d2ff;
+        }
+
+        .line {
+            width: 0%;
+            height: 2px;
+            background: #00d2ff;
+            margin: 15px auto;
+            animation: expand 1.5s forwards 1s;
+        }
+
+        @keyframes expand {
+            to { width: 100%; }
+        }
+
+        /* زر الفحص المطلوب: Check */
+        .check-btn {
+            background: transparent;
+            border: 1px solid #00d2ff;
+            color: #00d2ff;
+            padding: 10px 30px;
+            margin-top: 25px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: 0.3s;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .check-btn:hover {
+            background: #00d2ff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="glass-panel">
-        <div class="brand-title">PERLA'S ESP</div>
-        
-        <div class="status-list">
-            <div class="status-item">
-                <span>Message</span>
-                <small style="color: #666;">Received</small>
+    <div class="container">
+        <div class="box">
+            <div class="logo-text">Perla's ESP</div>
+            <div class="line"></div>
+            
+            <div class="status-info">
+                <div>MESSAGE</div>
+                <div>PHOTO</div>
+                <div>LINK</div>
             </div>
-            <div class="status-item">
-                <span>Image</span>
-                <small style="color: #666;">Ready</small>
-            </div>
-            <div class="status-item">
-                <span>Link</span>
-                <small style="color: #666;">Secure</small>
-            </div>
-        </div>
 
-        <button class="check-btn">Check</button>
+            <br>
+            <button class="check-btn">CHECK</button>
+            
+            <p style="color: #444; letter-spacing: 5px; font-size: 0.7rem; margin-top: 20px;">ULTIMATE INTELLIGENCE</p>
+        </div>
     </div>
 
 </body>
