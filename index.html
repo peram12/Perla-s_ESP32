@@ -5,107 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <title>ESP32 Dashboard</title>
     <style>
-        /* تعريف الألوان التي أرسلتِها */
         :root {
-            --c1: #7AAACE; --c2: #9CD5FF; --c3: #355872;
-            --c4: #F7F8F0; --c5: #FFF4EA; --c6: #0AC4E0;
-            --c7: #088395; --c8: #EBF4F6; --c9: #629FAD;
-            --c10: #296374; --c11: #B0FFFA; --c12: #00F7FF;
+            --c1: #088395; --c2: #00F7FF; --c3: #355872; --c4: #F7F8F0;
+            --c5: #B0FFFA; --c6: #7AAACE;
         }
 
-        /* أنيميشن الخلفية المتحركة لصفحة الدخول */
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* تأثير الخلفية المتحركة (Aceternity Style) */
+        .gradient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(125deg, #355872, #088395, #00F7FF, #296374);
+            background-size: 400% 400%; z-index: -1; animation: moveGradient 15s infinite alternate;
+        }
+        @keyframes moveGradient { 0% {background-position: 0% 50%} 100% {background-position: 100% 50%} }
+
+        /* الزر المتدرج الاحترافي (Serafim Style) */
+        .modern-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative; overflow: hidden;
+        }
+        .modern-card::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        .modern-card:hover::before { left: 100%; }
+        .modern-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--c2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .auth-bg {
-            background: linear-gradient(-45deg, var(--c3), var(--c7), var(--c10), var(--c6));
-            background-size: 400% 400%;
-            animation: gradientMove 12s ease infinite;
-        }
-
-        /* تأثير الـ Hover المتدرج على الرسائل */
-        .notification-card {
-            background: var(--c8);
-            border: 2px solid transparent;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            z-index: 1;
-        }
-
-        .notification-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            background: white;
-            border-color: var(--c12);
-            box-shadow: 0 0 20px rgba(0, 247, 255, 0.4);
-        }
-
-        /* خلفية الـ Shader عند الفراغ */
-        .shader-canvas {
-            background: radial-gradient(circle at center, var(--c11) 0%, var(--c1) 100%);
-            filter: blur(80px);
-            opacity: 0.4;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-        }
-
-        body { background-color: var(--c4); color: var(--c10); margin: 0; display: none; }
+        /* إخفاء السكرول بار */
+        ::-webkit-scrollbar { width: 0px; }
+        body { color: white; background: #0b111a; display: none; }
         
-        .glass {
-            background: rgba(255, 254, 234, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .title-glitch {
+            font-weight: 900; text-transform: uppercase; letter-spacing: 4px;
+            background: linear-gradient(to right, #B0FFFA, #00F7FF);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="antialiased">
 
-<div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex flex-col items-center justify-center text-white p-6">
-    <div class="glass p-12 rounded-[40px] shadow-2xl text-center">
-        <h1 class="text-4xl font-black mb-4 tracking-tighter" style="color: var(--c3)">Perla's ESP - 2026</h1>
-        <div class="w-16 h-1 bg-cyan-400 mx-auto rounded-full animate-pulse"></div>
-        <p class="mt-4 opacity-80" style="color: var(--c10)">بانتظار التحقق الآمن...</p>
+<div id="auth-screen" class="fixed inset-0 z-[200] flex items-center justify-center bg-[#0b111a]">
+    <div class="gradient-bg opacity-40"></div>
+    <div class="text-center z-10 p-10">
+        <h1 class="text-6xl font-black mb-6 title-glitch animate-pulse">Perla's ESP - 2026</h1>
+        <div class="h-[2px] w-48 bg-cyan-400 mx-auto mb-8 shadow-[0_0_15px_#00F7FF]"></div>
+        <p class="text-cyan-200 tracking-[0.3em] text-sm uppercase">Secure Access Required</p>
     </div>
 </div>
 
-<div id="empty-shader" class="shader-canvas"></div>
-
-<div id="main-content" class="max-w-2xl mx-auto p-6 relative z-10">
-    <header class="glass rounded-[30px] p-8 mb-8 text-center shadow-lg border-b-4" style="border-color: var(--c7)">
-        <h1 class="text-3xl font-bold uppercase tracking-widest" style="color: var(--c7)">ESP32 Dashboard</h1>
-        <p id="status" class="text-sm mt-2 font-medium" style="color: var(--c9)">جاري جلب البيانات من السيرفر...</p>
+<div id="main-content" class="relative min-h-screen p-8">
+    <div class="gradient-bg opacity-20"></div>
+    
+    <header class="max-w-4xl mx-auto mb-16 text-center pt-10">
+        <h1 class="text-5xl font-black mb-4 title-glitch">ESP32 Dashboard</h1>
+        <div class="inline-block px-4 py-1 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-400 text-xs font-mono">
+            SYSTEM ONLINE: 100% SECURE
+        </div>
     </header>
 
-    <div id="notifications-list" class="space-y-4">
+    <div id="notifications-list" class="max-w-2xl mx-auto space-y-6">
         </div>
 </div>
 
-<div id="viewer" class="fixed inset-0 z-[150] bg-white hidden overflow-y-auto p-6">
-    <div class="max-w-2xl mx-auto">
-        <button onclick="closeViewer()" class="mb-8 flex items-center gap-2 font-bold px-6 py-3 rounded-full text-white shadow-lg transition hover:scale-105" style="background: var(--c3)">
-            <span>⬅️</span> عودة للقائمة
+<div id="viewer" class="fixed inset-0 z-[300] hidden bg-black/90 backdrop-blur-3xl p-10">
+    <div class="max-w-3xl mx-auto h-full flex flex-col">
+        <button onclick="closeViewer()" class="self-start mb-8 px-8 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all font-bold">
+            ⬅ BACK TO HUB
         </button>
-        <div id="viewer-content" class="rounded-3xl overflow-hidden shadow-2xl bg-gray-50 p-4 min-h-[300px] flex items-center justify-center">
+        <div id="viewer-content" class="flex-1 flex items-center justify-center rounded-3xl overflow-hidden border border-white/10 bg-white/5 shadow-2xl">
             </div>
     </div>
 </div>
 
 <script>
-    // نظام الحماية
+    // الحماية
     setTimeout(() => {
-        const pin = prompt("أدخل الرمز السري:");
+        const pin = prompt("ACCESS CODE:");
         if (pin === "1712008") {
-            document.getElementById('auth-screen').style.fadeOut = "slow";
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.body.style.display = "block";
+            document.getElementById('auth-screen').style.display = 'none';
+            document.body.style.display = 'block';
+            // أنيميشن عند الدخول
+            anime({
+                targets: '.modern-card',
+                translateY: [50, 0], opacity: [0, 1],
+                delay: anime.stagger(100)
+            });
         } else {
-            alert("الرمز خاطئ!");
             window.location.reload();
         }
-    }, 1500);
+    }, 1000);
 
     const TOKEN = "8560208461:AAEC-4k06FP__JYXiiXPv-kDdyWRGNXNQhI";
     let lastId = 0;
@@ -119,12 +118,10 @@
     function openViewer(html) {
         document.getElementById('viewer-content').innerHTML = html;
         document.getElementById('viewer').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
     }
 
     function closeViewer() {
         document.getElementById('viewer').classList.add('hidden');
-        document.body.style.overflow = 'auto';
     }
 
     async function updateLoop() {
@@ -132,45 +129,39 @@
             const r = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${lastId + 1}`);
             const data = await r.json();
             const list = document.getElementById('notifications-list');
-            const shader = document.getElementById('empty-shader');
 
             if (data.ok && data.result.length > 0) {
-                shader.classList.add('hidden');
                 for (const item of data.result) {
                     lastId = item.update_id;
                     const m = item.message;
                     if (!m) continue;
 
-                    let icon = "💬", title = "رسالة", content = "";
-                    const time = new Date(m.date * 1000).toLocaleTimeString('ar-EG');
+                    let icon = "⚡", title = "DATA", content = "";
+                    const time = new Date(m.date * 1000).toLocaleTimeString('en-US', {hour12: false});
 
                     if (m.text) {
                         const isLink = m.text.includes("http") || m.text.includes("www");
                         if (isLink) {
-                            icon = "🔗"; title = "رابط مستلم";
+                            icon = "🔗"; title = "EXTERNAL LINK";
                             let url = m.text.trim(); if(!url.startsWith('http')) url = 'https://'+url;
-                            content = `<div class="p-8 text-center"><a href="${url}" target="_blank" class="block p-6 rounded-2xl border-4 border-dashed font-bold text-xl transition hover:bg-cyan-50" style="color:var(--c7); border-color:var(--c6)">اضغطي لفتح الرابط 🌐<br><br><span class="text-sm opacity-60">${m.text}</span></a></div>`;
+                            content = `<div class="p-10"><a href="${url}" target="_blank" class="block p-10 rounded-3xl border-2 border-cyan-500/50 bg-cyan-500/10 text-cyan-400 font-black text-2xl hover:bg-cyan-500/20 transition-all text-center">OPEN LINK 🌐</a></div>`;
                         } else {
-                            content = `<div class="p-8 text-2xl font-medium leading-relaxed" style="color:var(--c3)">${m.text}</div>`;
+                            content = `<div class="p-10 text-3xl font-light tracking-wide text-cyan-100">${m.text}</div>`;
                         }
                     } else if (m.photo) {
-                        icon = "📸"; title = "صورة ملتقطة";
+                        icon = "📸"; title = "IMAGE CAPTURE";
                         const url = await fetchFiles(m.photo[m.photo.length - 1].file_id);
-                        content = `<img src="${url}" class="max-w-full rounded-xl shadow-lg">`;
+                        content = `<img src="${url}" class="max-h-[70vh] rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]">`;
                     }
 
                     const div = document.createElement('div');
-                    div.className = "notification-card p-5 rounded-2xl flex justify-between items-center cursor-pointer";
-                    div.innerHTML = `<div class="flex items-center gap-4"><span class="text-2xl">${icon}</span><span class="font-bold" style="color:var(--c10)">${title}</span></div><span class="text-xs opacity-50">${time}</span>`;
-                    div.onclick = () => openViewer(content);
-                    list.prepend(div);
-                }
-                document.getElementById('status').innerText = "الموقع متصل بالبوت الآن ✅";
-            }
-        } catch (e) {}
-    }
-
-    setInterval(updateLoop, 2000);
-</script>
-</body>
-</html>
+                    div.className = "modern-card p-6 rounded-3xl flex justify-between items-center group cursor-pointer";
+                    div.innerHTML = `
+                        <div class="flex items-center gap-6">
+                            <span class="text-3xl filter drop-shadow-[0_0_10px_#00F7FF]">${icon}</span>
+                            <div>
+                                <h3 class="text-white font-black text-lg group-hover:text-cyan-400 transition-colors">${title}</h3>
+                                <p class="text-xs text-cyan-700 font-mono">${time}</p>
+                            </div>
+                        </div>
+                        <div class="text-cyan-500 opacity-0 group-hover:opacity-
