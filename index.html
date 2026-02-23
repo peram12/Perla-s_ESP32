@@ -9,20 +9,32 @@
     <style>
         :root { --neon-blue: #00d2ff; --dark-bg: #12141d; --card-bg: rgba(255, 255, 255, 0.05); --border: rgba(0, 210, 255, 0.2); }
         body { margin: 0; padding: 0; background: radial-gradient(circle, #1a2238 0%, var(--dark-bg) 100%); color: white; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow-x: hidden; }
+        
+        /* شاشة الدخول */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark-bg); display: flex; justify-content: center; align-items: center; z-index: 10000; }
-        .login-box { background: var(--card-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--border); text-align: center; backdrop-filter: blur(15px); width: 300px; }
+        .login-box { background: var(--card-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--border); text-align: center; backdrop-filter: blur(15px); width: 300px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         .logo-text { font-size: 2.5rem; font-weight: 900; letter-spacing: 5px; background: linear-gradient(45deg, var(--neon-blue), #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        input { background: rgba(255,255,255,0.08); border: 1px solid var(--border); padding: 15px; color: white; border-radius: 8px; width: 100%; margin-top: 20px; box-sizing: border-box; text-align: center; }
-        button { margin-top: 25px; background: var(--neon-blue); border: none; padding: 12px 40px; cursor: pointer; font-weight: bold; border-radius: 5px; color: black; transition: 0.3s; }
-        button:hover { box-shadow: 0 0 20px var(--neon-blue); }
+        
+        input { background: rgba(255,255,255,0.08); border: 1px solid var(--border); padding: 15px; color: white; border-radius: 8px; width: 100%; margin-top: 20px; box-sizing: border-box; text-align: center; font-size: 1.2rem; outline: none; }
+        input:focus { border-color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
+        
+        button { margin-top: 25px; background: var(--neon-blue); border: none; padding: 12px 40px; cursor: pointer; font-weight: bold; border-radius: 5px; color: black; transition: 0.3s; width: 100%; }
+        button:hover { box-shadow: 0 0 20px var(--neon-blue); transform: scale(1.02); }
+        
+        /* المحتوى الرئيسي */
         #main-content { display: none; padding: 20px; }
         .app-container { max-width: 700px; margin: auto; }
         .notification-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 20px; animation: slideUp 0.5s ease-out; border-left: 4px solid var(--neon-blue); }
         .time-label { color: var(--neon-blue); font-size: 0.8rem; background: rgba(0,210,255,0.1); padding: 4px 8px; border-radius: 5px; }
-        .photo-trigger { background: rgba(255,255,255,0.05); padding: 15px; text-align: center; cursor: pointer; border-radius: 8px; margin-top: 10px; color: var(--neon-blue); border: 1px solid var(--border); font-weight: bold; transition: 0.3s; }
+        
+        /* زر عرض الصورة */
+        .photo-trigger { background: rgba(0, 210, 255, 0.1); padding: 15px; text-align: center; cursor: pointer; border-radius: 8px; margin-top: 15px; color: var(--neon-blue); border: 1px solid var(--border); font-weight: bold; transition: 0.3s; }
         .photo-trigger:hover { background: var(--neon-blue); color: black; }
-        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; padding: 20px; text-align: center; box-sizing: border-box; }
-        #viewer img { max-width: 100%; max-height: 80vh; border-radius: 15px; margin-top: 20px; box-shadow: 0 0 30px var(--neon-blue); }
+        
+        /* عارض الصور */
+        #viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; padding: 20px; text-align: center; box-sizing: border-box; }
+        #viewer img { max-width: 100%; max-height: 80vh; border-radius: 15px; margin-top: 20px; box-shadow: 0 0 50px var(--neon-blue); border: 2px solid var(--neon-blue); }
+        
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -31,7 +43,7 @@
 <div id="login-screen">
     <div class="login-box">
         <h2 class="logo-text">SECURE ACCESS</h2>
-        <input type="password" id="pin-input" placeholder="••••••">
+        <input type="password" id="pin-input" placeholder="••••••" onkeypress="handleKey(event)">
         <button onclick="checkAccess()">UNLOCK</button>
     </div>
 </div>
@@ -39,66 +51,81 @@
 <div id="main-content">
     <div style="text-align:center; padding: 20px;">
         <h1 class="logo-text">Perla's ESP</h1>
-        <p id="status" style="color:var(--neon-blue)">● CONNECTED TO BEEBOTTE</p>
+        <p id="status" style="color:var(--neon-blue)">● SYSTEM LIVE - LISTENING</p>
     </div>
     <div class="app-container" id="list"></div>
 </div>
 
 <div id="viewer">
-    <button onclick="closeViewer()" style="float:left; background: #ff4b2b; color: white; padding: 10px 20px;">← CLOSE</button>
-    <div id="viewer-content"></div>
+    <div style="max-width: 900px; margin: auto;">
+        <button onclick="closeViewer()" style="width: auto; background: #ff4b2b; color: white; padding: 10px 30px; margin-bottom: 10px;">← CLOSE VIEWER</button>
+        <div id="viewer-content"></div>
+    </div>
 </div>
 
 <script>
-    // 1. استخدام الـ API Key فقط للموقع (الأمان أهم شيء)
+    // 1. مفتاحك الخاص بـ Beebotte (الـ API Key)
     const bbt = new BBT('h3qQsGD5tT7uXyRxWB0LNS73');
 
+    // وظيفة الضغط على Enter للدخول
+    function handleKey(e) { if(e.keyCode === 13) checkAccess(); }
+
     window.checkAccess = () => {
-        // كلمة السر اللي طلبتيها
+        // كلمة السر الخاصة بك
         if(document.getElementById('pin-input').value === "1712008") {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             startListening();
-        } else { alert("WRONG PIN"); }
+        } else { 
+            alert("ACCESS DENIED: WRONG PIN"); 
+            document.getElementById('pin-input').value = "";
+        }
     };
 
-    function addNotify(title, body, isPhoto = false) {
+    function addNotify(title, data, isPhoto = false) {
         const time = new Date().toLocaleTimeString();
         const div = document.createElement('div');
         div.className = 'notification-item';
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="color:var(--neon-blue); font-weight:bold;">${title}</span>
+                <span style="color:var(--neon-blue); font-weight:bold; letter-spacing: 1px;">${title}</span>
                 <span class="time-label">${time}</span>
             </div>
-            ${isPhoto ? `<div class="photo-trigger" onclick="openPhoto('${body}')">📸 VIEW CAPTURED IMAGE</div>` : `<div style="margin-top:10px; font-size:1.1rem;">${body}</div>`}
+            ${isPhoto ? 
+                `<div class="photo-trigger" onclick="openPhoto('${data}')">📸 DECRYPT & VIEW IMAGE</div>` : 
+                `<div style="margin-top:10px; font-size:1.1rem; color: #e0e0e0;">${data}</div>`
+            }
         `;
         document.getElementById('list').prepend(div);
     }
 
     function startListening() {
-        console.log("Listening for ESP32 data...");
+        console.log("Perla's Hub is now listening for ESP32 data...");
 
-        // الاشتراك في القناة (تأكدي أن القناة Public في Beebotte لتسهيل الاتصال بالموقع)
+        // الاشتراك في قناة الصور
         bbt.subscribe({channel: 'esp32perla', resource: 'photo_url'}, (msg) => {
-            addNotify('📸 NEW IMAGE', msg.data, true);
+            addNotify('NEW CAPTURE', msg.data, true);
         });
 
+        // الاشتراك في قناة الرسائل
         bbt.subscribe({channel: 'esp32perla', resource: 'chat'}, (msg) => {
-            addNotify('💬 MESSAGE', msg.data, false);
+            addNotify('INCOMING MESSAGE', msg.data, false);
         });
 
+        // الاشتراك في السجلات (Logs)
         bbt.subscribe({channel: 'esp32perla', resource: 'logs'}, (msg) => {
-            addNotify('⚙️ SYSTEM LOG', msg.data, false);
+            addNotify('SYSTEM LOG', msg.data, false);
         });
     }
 
     window.openPhoto = (url) => {
-        document.getElementById('viewer-content').innerHTML = `<img src="${url}" alt="ESP32 Capture">`;
+        document.getElementById('viewer-content').innerHTML = `<img src="${url}" alt="Captured by ESP32">`;
         document.getElementById('viewer').style.display = 'block';
     };
+
     window.closeViewer = () => { 
         document.getElementById('viewer').style.display = 'none'; 
+        document.getElementById('viewer-content').innerHTML = ""; // تفريغ الذاكرة
     };
 </script>
 </body>
